@@ -28,11 +28,12 @@ const generateImage = async (prompt) => {
   const imgResult = await openai.createImage({
     prompt: imgPrompt,
     n: 1,
-    size: "256x256",
+    size: "512x512",
+    response_format: "b64_json",
   });
 
-  const imgUrl = imgResult.data.data[0].url;
-  console.log(imgUrl);
+  const imgUrl = `data:image/png;base64,${imgResult.data.data[0].b64_json}`;
+  // console.log(imgUrl);
   return imgUrl;
 };
 
@@ -48,18 +49,19 @@ app.post("/create-recipe", async (req, res) => {
         {
           role: "system",
           content:
-            "You are a professional chef that can make real recipes that has a name, prep time, ingredients and directions from ingredients. you can assume that the user has common spices like salt, black pepper, sugar and such",
+            "You are a professional chef that can make real recipes that has a recipe name, prep time, ingredients and directions from ingredients. you can assume that the user has common spices like salt, black pepper, sugar, water, and such",
         },
         { role: "user", content: recipePrompt },
       ],
       temperature: 0.7,
       // max_tokens: 1,
       frequency_penalty: 0,
-      presence_penalty: 0,
+      presence_penalty: 0.3,
     });
 
     const response = chat_completion.data.choices[0].message;
     const content = response.content;
+    console.log(content);
 
     ////////
 
